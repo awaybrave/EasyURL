@@ -4,9 +4,10 @@ window.onload = function(){
 	}
 	var messagemanager = function(){
 		var that = {};
-		that.sendmessage = function(receiver, content, callback){
+		that.sendmessage = function(receiver, event, content, callback){
 			var messageContent = {
 				"sender"  : config.name,
+				"event"   : event,
 				"content" : content,
 				"receiver": "background"
 			};

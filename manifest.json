@@ -21,6 +21,9 @@
 		],
 		"js":[
 			"js/content.js"
+		],
+		"css":[
+			"css/content.css"
 		]	
 	}]
 }
