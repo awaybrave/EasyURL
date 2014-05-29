@@ -1,0 +1,12 @@
+#kwj-url-list{
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	z-index: 1000;
+}
+#kwj-url-list .url_wrapper{
+	width: 50%;
+	margin: auto;	
+	border: 5px solid #ddd;
+	border-radius: 5px;
+}
