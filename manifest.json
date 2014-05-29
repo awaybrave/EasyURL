@@ -1,0 +1,26 @@
+{
+	"manifest_version": 2,
+
+	"name": "checkURL",
+	"description": "This extension manages your current tabs in the windows.",
+	"version": "1.0",
+	"permissions": [
+		"tabs"
+	],
+	"browser_action": {
+		//"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
+	"background":{
+		"page": "index.html"
+	},
+	"content_scripts":[{
+		"matches":[
+			"http://*/*",
+			"https://*/*"
+		],
+		"js":[
+			"js/content.js"
+		]	
+	}]
+}
