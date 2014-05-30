@@ -10,3 +10,7 @@
 	border: 5px solid #ddd;
 	border-radius: 5px;
 }
+
+#kwj-url-list .del-url-btn{
+	display: none;
+}

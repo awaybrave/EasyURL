@@ -21,8 +21,29 @@ var urlStore = function(){
 	that.ready = function(callback){
 		readyHandler = callback;
 	};
-	that.addSet = function(){
+	that.addSet = function(urls){
+		var transaction = db.transaction(["urlSet"], "readwrite");
+		var objectStore = transaction.objectStore("urlSet");	
+		var request = objectStore.add({"key": new Date().getTime(), "urls": urls});
+		request.oncomplete = function(){
 
+		};
+	};
+	that.getSet = function(callback, callbackpara){
+		var result = [];
+		var transaction = db.transaction(["urlSet"]);
+		var objectStore = transaction.objectStore("urlSet");
+		objectStore.openCursor(null, "prev").onsuccess = function(event) {
+			var cursor = event.target.result;
+			if(cursor){
+				result.push(cursor.value);
+				cursor.continue();
+			}
+			else{
+				callbackpara.push(result);
+				callback.apply(this, callbackpara);
+			}
+		};
 	};
 	openDatabase();
 	return that;
@@ -68,9 +89,10 @@ us.ready(function(){
 	  							});
 	  							break;	
 	  						case "getRestore":
+	  							us.getSet(sendmessage, ["content", "showrestorelist"]);
 	  							break;
 	  						case "save":
-	  							urlStore.addSet(content);	
+	  							us.addSet(content);	
 		  						break;
 	  					}			
 	  				}

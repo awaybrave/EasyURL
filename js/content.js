@@ -1,72 +1,132 @@
 var config = {
 	"name": "content",
-	"urlTemplate": "<div class='url_wrapper'><ul class='url_list'><%for(var i=0;i<this.urls.length;i++){%><li><span data-url=<%=this.urls[i].link%>><%=this.urls[i].title%></span><span class='del-url-btn'></span></li><%}%></ul><div class='btn'><span class='save'>保存</span><span class='cancel'>取消</span></div></div>",
-	"urlListId": "kwj-url-list"
+	"urlTemplate": "<div class='url_wrapper'><ul class='url_list'><%for(var i=0;i<this.urls.length;i++){%><li class='info-block'><span class='link-block' data-url=<%=this.urls[i].link%>><%=this.urls[i].title%></span><span class='del-url-btn'>删除</span></li><%}%></ul><div class='btn'><span class='save'>保存</span><span class='cancel'>取消</span></div></div>",
+	"restoreListTemplate": "<div class='restore_wrapper'><ul class='restore_list'><%for(var i=0; i<this.restore.length;i++){%><li class='restore_item'><ul><%for(var j=0;j<this.restore[i].urls.length;j++){%><li data-url=<%=this.restore[i].urls[j].link%>><%=this.restore[i].urls[j].title%></li><%}%></ul></li><%}%></ul></div>",
+	"urlListId": "kwj-url-list",
+	"restoreListId": "kwj-restore-list"
 };
 
-var urlsPrinter = {
-	"messageHandler": undefined,
-	"templateEngine": function(template, data){
-		function TemplateEngine(html, options) {
-			var re = /<%([^%>]+)?%>/g, code = 'var r=[];\n', cursor = 0;
-			var add = function(line, js) {
-				if(js){
-					if(line[0] != "="){
-						code += line + '\n';
-					}
-					else{
-						code += 'r.push(' + line.slice(1) + ');\n'
-					}
+var Director = function(){
+	var that = {};
+	var director_members = {}
+	that.setMembers = function(members){
+		for(var m in members)
+			director_members[m] = members[m];
+	};
+	that.takeTransaction = function(m, stuff, para){
+		director_members[m][stuff](para);
+	};
+	return that;
+};
+
+var Transaction = function(director){
+	this.HandInTransaction = function(m, stuff, para){
+		director.takeTransaction(m, stuff, para);
+	};
+};
+
+var ViewTransaction = function(){
+	var that = {};
+	var templateEngine = function(html, options){
+		var re = /<%([^%>]+)?%>/g, code = 'var r=[];\n', cursor = 0;
+		var add = function(line, js) {
+			if(js){
+				if(line[0] != "="){
+					code += line + '\n';
 				}
 				else{
-					(code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
+					code += 'r.push(' + line.slice(1) + ');\n'
 				}
-				return add;
 			}
-			while(match = re.exec(html)) {
-				add(html.slice(cursor, match.index))(match[1], true);
-				cursor = match.index + match[0].length;
+			else{
+				(code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
 			}
-			add(html.substr(cursor, html.length - cursor));
-			code += 'return r.join("");';
-			return new Function(code.replace(/[\r\t\n]/g, '')).apply(options);
+			return add;
 		}
-		var result = TemplateEngine(config.urlTemplate, data);
-		return result;
-	},
-	"printUrls": function(urlsInfo){
-		var tplData = this.templateEngine(config.urlTemplate, {urls: urlsInfo}); 
-		var list = document.getElementById(config.urlListId);
+		while(match = re.exec(html)) {
+			add(html.slice(cursor, match.index))(match[1], true);
+			cursor = match.index + match[0].length;
+		}
+		add(html.substr(cursor, html.length - cursor));
+		code += 'return r.join("");';
+		return new Function(code.replace(/[\r\t\n]/g, '')).apply(options);
+	};
+	that.printUrls = function(urlsInfo){
+		var tplData, newDiv, cancelBtn, saveBtn, list, urlItems;
+
+		tplData = templateEngine(config.urlTemplate, {urls: urlsInfo}); 
+		list = document.getElementById(config.urlListId);
 		if(list){
 			list.parentNode.removeChild(list);	
 		}
-		var newDiv = document.createElement("div");
+
+		newDiv = document.createElement("div");
 		newDiv.id = config.urlListId;
 		document.body.appendChild(newDiv);
 		newDiv.innerHTML = tplData;
-		var cancelBtn = newDiv.querySelector(".cancel");
-		var saveBtn = newDiv.querySelector(".save"); 
+		cancelBtn = newDiv.querySelector(".cancel");
+		saveBtn = newDiv.querySelector(".save");
+		urlItems = newDiv.getElementsByClassName("info-block");
+
 		cancelBtn.onclick = function(){
 			var block = document.getElementById(config.urlListId);
 			block.parentNode.removeChild(block);
 		};
 		saveBtn.onclick = function(){
-			urlsPrinter.messageHandler.sendmessage("background", "save", urlsInfo, function(){
-				alert("Save A Set Of Webpages");	
+			var linkDoms = newDiv.getElementsByClassName("link-block");
+			var links = [];
+			for(var i = 0; i < linkDoms.length; i++){
+				links.push({
+					"title": linkDoms[i].innerHTML, 	
+					"link" : linkDoms[i].getAttribute("data-url")
+				})	
+			}
+			ViewTransaction.prototype.HandInTransaction("message", "sendmessage", {
+				"receiver" : "background",	
+				"event"    : "save",
+				"content"  : links 
 			});
+			cancelBtn.onclick();
 		};
-	}
+		for(var i = 0; i < urlItems.length; i++){
+			urlItems[i].onmouseover = function(e){
+				var delBtn = this.querySelector(".del-url-btn");
+				delBtn.style.display = "inline";
+			};
+			urlItems[i].onmouseout = function(e){
+				var delBtn = this.querySelector(".del-url-btn");
+				delBtn.style.display = "none";
+			};
+		}
+		var delBtns = newDiv.querySelectorAll(".del-url-btn");
+		var itemCount = delBtns.length;
+		for(var i = 0; i < delBtns.length; i++){
+			delBtns[i].onclick = function(e){
+				var li = this.parentNode;
+				li.parentNode.removeChild(li);
+				itemCount--;
+				if(itemCount == 0){
+					list = document.getElementById(config.urlListId);
+					list.parentNode.removeChild(list);	
+				}
+			}	
+		}
+	};
+	that.printRestoreUrls = function(urllist){
+
+	};
+	return that;
 };
 
-var messagemanager = function(){
+var MessageTransaction = function(){
 	var that = {};
-	that.sendmessage = function(receiver, event, content, callback){
+	that.sendmessage = function(para){
 		var messageContent = {
-			"receiver": receiver,
-			"event": event,
-			"content": content
+			"receiver": para.receiver,
+			"event": para.event,
+			"content": para.content
 		};
-		chrome.runtime.sendMessage(messageContent);
+		chrome.runtime.sendMessage(messageContent, para.callback);
 	};
 	var receivemessage = function(){
 		chrome.runtime.onMessage.addListener(
@@ -78,7 +138,10 @@ var messagemanager = function(){
 	  				var messageContent = request.content;
 	  				switch (messageEvent){
 	  					case "showurl":
-	  						urlsPrinter.printUrls(messageContent);
+	  						MessageTransaction.prototype.HandInTransaction("view", "printUrls", messageContent);
+	  						break;
+	  					case "showrestorelist":
+	  						MessageTransaction.prototype.HandInTransaction("view", "printRestoreUrls", messageContent);
 	  						break;
 	  				}			
 	  			}
@@ -89,6 +152,15 @@ var messagemanager = function(){
 };
 
 (function(){
-	var mm = messagemanager();
-	urlsPrinter.messageHandler = mm;	
+	/*Init Environment*/
+	var _director = Director();
+	var _transaction = new Transaction(_director);
+	ViewTransaction.prototype = _transaction;
+	MessageTransaction.prototype = _transaction;
+	var _view = ViewTransaction();
+	var _message = MessageTransaction();
+	_director.setMembers({
+		"view": _view,
+		"message": _message
+	});
 })();
