@@ -6,6 +6,7 @@ var urlStore = function(){
 	var that = {};
 	var db;
 	var readyHandler;
+	var fullCount = 5;
 	var getTimeStamp = function(){
 		var time = new Date();	
 		var temps = [time.getFullYear(), time.getMonth()+1, 
@@ -22,8 +23,19 @@ var urlStore = function(){
 		}
 		request.onupgradeneeded = function(event){
 			db = request.result;
-			var urlSetStore = db.createObjectStore("urlSet", {keyPath: "key"});
+			var urlSetStore = db.createObjectStore("urlSet", {keyPath: "key"}); 
+			localStorage.setItem("count", 0);
 			readyHandler();
+		};
+	};
+	var deleteOneSet = function(){
+		var transaction = db.transaction(["urlSet"], "readwrite");
+		var objectStore = transaction.objectStore("urlSet");
+		objectStore.openCursor().onsuccess = function(event){
+			var cursor = event.target.result;
+			if(cursor){
+				objectStore.delete(cursor.key);	
+			}
 		};
 	};
 	that.ready = function(callback){
@@ -33,8 +45,14 @@ var urlStore = function(){
 		var transaction = db.transaction(["urlSet"], "readwrite");
 		var objectStore = transaction.objectStore("urlSet");	
 		var request = objectStore.add({"key": new Date().getTime(), "urls": urls, "time": getTimeStamp()});
-		request.oncomplete = function(){
-
+		request.onsuccess = function(){
+			var currentNum = parseInt(localStorage.getItem("count"), 10);
+			if(currentNum + 1 >= fullCount){
+				deleteOneSet();
+			}
+			else{
+				localStorage.setItem("count", currentNum+1);
+			}
 		};
 	};
 	that.getSet = function(callback, callbackpara){
@@ -52,7 +70,7 @@ var urlStore = function(){
 				callback.apply(this, callbackpara);
 			}
 		};
-	};
+	}; 
 	openDatabase();
 	return that;
 };
@@ -104,7 +122,6 @@ us.ready(function(){
 		  						break;
 							case "openRestore":
 								content.forEach(function(item){
-									debugger;
 									chrome.tabs.create({url: item}, null);
 								});
 								break;

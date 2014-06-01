@@ -14,3 +14,81 @@
 #kwj-url-list .del-url-btn{
 	display: none;
 }
+
+#kwj-restore-list{
+	width: 70%;
+	position: absolute;
+	top: 10%;
+	left: 15%;
+	z-index: 1000;
+	border: 1px solid gray;
+	border-radius:5px; 
+	padding: 1px;
+	background: gray; 
+	text-align: left;
+	color: white;
+} 
+.item-time{ 
+	color: white;
+	font-weight: bold;
+	font-size: 16px;
+	line-height: 20px;	
+	text-align: left;
+	padding: 5px;
+	opacity: 0.95;
+}
+.restore-list-blue{
+	background-color: #7fffd4;
+}	
+.restore-list-blue:hover{
+	background-color: #008b8b;
+}
+.restore-list-green{
+	background-color: #8fbc8f; 
+}
+.restore-list-green:hover{
+	background-color: #2e8b57;
+}
+.restore-list-purple{
+	background-color: #ba55d3;
+}
+.restore-list-purple:hover{
+	background-color: #ff00ff;
+}
+.restore-list-red{
+	background-color: #f08080;
+}
+.restore-list-red:hover{
+	background-color: #dc143c;
+}
+.restore-list-yellow{
+	background-color: #ffd700;
+}
+.restore-list-yellow:hover{
+	background-color: #daa520;
+}
+#kwj-restore-list .item-urls{
+	display: none;
+}
+#kwj-restore-list .item-url{
+	font-size: 14px;
+	padding: 2px;
+	border-bottom: 1px dashed #ccc; 
+}
+#kwj-restore-list .item-url:hover{
+	color: #dcdcdc;
+}
+#kwj-restore-list .btn{
+	width: 100%;
+	height: 30px;
+	background: gray;
+	color: white;
+	opacity: 0.6;
+}
+#kwj-restore-list .btn span{
+	line-height: 30px;
+	margin-right: 20px;
+}
+#kwj-restore-list .btn span:hover{
+	color: #dcdcdc;
+}
