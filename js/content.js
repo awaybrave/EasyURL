@@ -1,7 +1,7 @@
 var config = {
 	"name": "content",
 	"urlTemplate": "<div class='url_wrapper'><ul class='url_list'><%for(var i=0;i<this.urls.length;i++){%><li class='info-block'><span class='link-block' data-url=<%=this.urls[i].link%>><%=this.urls[i].title%></span><span class='del-url-btn'>删除</span></li><%}%></ul><div class='btn'><span class='save'>保存</span><span class='cancel'>取消</span></div></div>",
-	"restoreListTemplate": "<div class='restore_wrapper'><ul class='restore_list'><%for(var i=0; i<this.restore.length;i++){%><li class='restore_item'><ul><%for(var j=0;j<this.restore[i].urls.length;j++){%><li data-url=<%=this.restore[i].urls[j].link%>><%=this.restore[i].urls[j].title%></li><%}%></ul></li><%}%></ul></div>",
+	"restoreListTemplate": "<div class='restore_wrapper'><ul class='restore_list'><%for(var i=0;i<this.restore.length;i++){%><li class='restore_item'><div class='item-time' data-status=0>创建时间：<%=this.restore[i].time%></div><ul><%for(var j=0;j<this.restore[i].urls.length;j++){%><li data-url=<%=this.restore[i].urls[j].link%>><%=this.restore[i].urls[j].title%></li><%}%></ul></li><%}%></ul><div class='btn'><span class='open'>打开</span><span class='cancel'>取消</span></div>",
 	"urlListId": "kwj-url-list",
 	"restoreListId": "kwj-restore-list"
 };
@@ -20,8 +20,9 @@ var Director = function(){
 };
 
 var Transaction = function(director){
+	this.director = director;
 	this.HandInTransaction = function(m, stuff, para){
-		director.takeTransaction(m, stuff, para);
+		this.director.takeTransaction(m, stuff, para);
 	};
 };
 
@@ -113,7 +114,51 @@ var ViewTransaction = function(){
 		}
 	};
 	that.printRestoreUrls = function(urllist){
+		//mark: remember to cache data;
+		var newDiv, tempDiv, tplData,
+			openBtn, cancelBtn, tabsSet; 	
+		newDiv = document.createElement("div");
+		newDiv.id = config.restoreListId;
+		tempDiv = document.getElementById(config.restoreListId);
+		if(tempDiv){
+			tempDiv.parentNode.removeChild(tempDiv);
+		}
+		document.body.appendChild(newDiv);
 
+		tplData = templateEngine(config.restoreListTemplate, {restore:urllist});
+		newDiv.innerHTML = tplData;
+
+		openBtn = newDiv.querySelector(".open");
+		cancelBtn = newDiv.querySelector(".cancel");
+		tabsSet = newDiv.querySelectorAll(".item-time");
+		for(var i = 0; i < tabsSet.length; i++){
+			tabsSet[i].onclick = function(){
+				if(this.getAttribute("data-status") == "1")
+					this.setAttribute("data-status", "0");
+				else
+					this.setAttribute("data-status", "1");
+			};
+		}
+		openBtn.onclick = function(){
+			var urls = [];	
+			for(var tab = 0; tab < tabsSet.length; tab++){
+				if(tabsSet[tab].getAttribute("data-status") == "1"){
+					var data = tabsSet[tab].parentNode.querySelectorAll("li");
+					for(var d = 0; d < data.length; d++){
+						urls.push(data[d].getAttribute("data-url"));
+					}
+				}
+			}
+			ViewTransaction.prototype.HandInTransaction("message", "sendmessage", {
+				"receiver" : "background",	
+				"event"    : "openRestore",
+				"content"  : urls 
+			}); 
+			cancelBtn.onclick();
+		};
+		cancelBtn.onclick = function(){
+			newDiv.parentNode.removeChild(newDiv);
+		};
 	};
 	return that;
 };

@@ -6,6 +6,14 @@ var urlStore = function(){
 	var that = {};
 	var db;
 	var readyHandler;
+	var getTimeStamp = function(){
+		var time = new Date();	
+		var temps = [time.getFullYear(), time.getMonth()+1, 
+					 time.getDate(), time.getHours(),
+					 time.getMinutes()
+					];
+		return temps.join("/");
+	};
 	var openDatabase = function(){
 		var request = indexedDB.open("URLStore", "1");
 		request.onsuccess = function(event){
@@ -24,7 +32,7 @@ var urlStore = function(){
 	that.addSet = function(urls){
 		var transaction = db.transaction(["urlSet"], "readwrite");
 		var objectStore = transaction.objectStore("urlSet");	
-		var request = objectStore.add({"key": new Date().getTime(), "urls": urls});
+		var request = objectStore.add({"key": new Date().getTime(), "urls": urls, "time": getTimeStamp()});
 		request.oncomplete = function(){
 
 		};
@@ -94,6 +102,12 @@ us.ready(function(){
 	  						case "save":
 	  							us.addSet(content);	
 		  						break;
+							case "openRestore":
+								content.forEach(function(item){
+									debugger;
+									chrome.tabs.create({url: item}, null);
+								});
+								break;
 	  					}			
 	  				}
 			});
