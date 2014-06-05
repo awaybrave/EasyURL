@@ -6,6 +6,7 @@ var urlStore = function(){
 	var that = {};
 	var db;
 	var readyHandler;
+	var readyExecuted = false;
 	var fullCount = 5;
 	var getTimeStamp = function(){
 		var time = new Date();	
@@ -25,7 +26,6 @@ var urlStore = function(){
 			db = request.result;
 			var urlSetStore = db.createObjectStore("urlSet", {keyPath: "key"}); 
 			localStorage.setItem("count", 0);
-			readyHandler();
 		};
 	};
 	var deleteOneSet = function(){
