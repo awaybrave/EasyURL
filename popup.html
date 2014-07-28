@@ -2,12 +2,32 @@
 	<head>
 		<meta charset="utf-8">	
 		<style type="text/css">
+			body{
+				width: 200px;	
+				margin: 0;
+				padding: 0;
+				background: #5FB85F;
+			}
 			ul{
+				margin: 0;
+				padding: 0;
 				width: 100%;	
 			}
 			ul li{
+				text-align: center;
+				font-weight: bold;
+				color: #fff;
 				list-style: none;
 				cursor: pointer;	
+				border-bottom: 1px dashed #378137;
+				padding: 10px 0;
+			}
+			ul li:last-child{
+				border: none;
+				padding-bottom: 10px;	
+			}
+			ul li:hover{
+				color: #ddd;	
 			}
 		</style>
 		<script type="text/javascript" src="js/popup.js"></script>

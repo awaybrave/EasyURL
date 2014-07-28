@@ -53,6 +53,7 @@
 	background: none;
 	text-align: center;
 }
+#kwj-restore-list .del-all,
 #kwj-url-list .cancel,
 #kwj-restore-list .cancel{
 	font-size: 20px;
@@ -62,6 +63,9 @@
 	width: 50%;
 	background: none;
 	text-align: center;
+}
+#kwj-restore-list .del-all{
+	color: #900b09;	
 }
 #kwj-restore-list{
 	width: 70%;
@@ -90,7 +94,8 @@
 	font-size: 16px;
 	line-height: 20px;	
 	text-align: left;
-	padding: 5px;
+	padding: 5px 0 5px 5px;
+	width: auto;
 	opacity: 0.95;
 }
 .restore-list-blue{
@@ -133,6 +138,7 @@
 	padding: 10px;
 	background: gray;
 	border-bottom: 1px dashed #ccc; 
+	width: auto;
 }
 #kwj-restore-list .item-url:hover{
 	color: #dcdcdc;
