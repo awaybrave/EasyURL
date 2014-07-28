@@ -1,7 +1,7 @@
 var config = {
 	"name": "content",
 	"urlTemplate": "<div class='url_wrapper'><ul class='url_list'><%for(var i=0;i<this.urls.length;i++){%><li class='info-block'><span class='link-block' title=<%=this.urls[i].link%>><%=this.urls[i].title%></span><span class='del-url-btn'>&times;</span></li><%}%></ul><div class='kwj-btn'><span class='save'>Save</span><span class='cancel'>Cancel</span></div></div>",
-	"restoreListTemplate": "<div class='restore_wrapper'><ul class='restore-list'><%for(var i=0;i<this.restore.length;i++){%><li class='restore-item' items-id=<%=this.restore[i].key%>><div class='item-time' data-status=0><%=i+1%>.创建时间：<%=this.restore[i].time%><span></span><span></span></div><ul class='item-urls'><%for(var j=0;j<this.restore[i].urls.length;j++){%><li class='item-url' title=<%=this.restore[i].urls[j].link%>><%=this.restore[i].urls[j].title%></li><%}%></ul></li><%}%></ul><div class='kwj-btn'><span class='cancel'>Cancel</span><span class='del-all'>Delete All</span></div>",
+	"restoreListTemplate": "<div class='restore_wrapper'><ul class='restore-list'><%for(var i=0;i<this.restore.length;i++){%><li class='restore-item' items-id=<%=this.restore[i].key%>><div class='item-time' data-status=0><%=i+1%>.创建时间：<%=this.restore[i].time%><span class='items-tool'><span class='close-btn'></span><span class='del-btn'>&times;</span></span></div><ul class='item-urls'><%for(var j=0;j<this.restore[i].urls.length;j++){%><li class='item-url' title=<%=this.restore[i].urls[j].link%>><%=this.restore[i].urls[j].title%></li><%}%></ul></li><%}%></ul><div class='kwj-btn'><span class='cancel'>Cancel</span><span class='del-all'>Delete All</span></div>",
 	"urlListId": "kwj-url-list",
 	"restoreListId": "kwj-restore-list"
 };

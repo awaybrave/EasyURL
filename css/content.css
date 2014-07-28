@@ -158,5 +158,10 @@
 	color: #dcdcdc;
 }
 #kwj-restore-list .restore-item{
+	position: relative;
 	cursor: pointer;	
+}
+#kwj-restore-list .items-tool{
+	position: absolute;
+	right: 10px;	
 }
